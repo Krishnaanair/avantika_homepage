@@ -1,17 +1,96 @@
 "use client"
 
+import { useState } from "react"
+import { motion } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
-import { motion } from "framer-motion"
-import { ChevronRight, ShoppingBag } from "lucide-react"
+import { ShoppingBag } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-export default function Home() {
+// Define the Product and CartItem interfaces
+export interface Product {
+  id: number
+  name: string
+  price: number
+  image: string
+}
+
+export interface CartItem extends Product {
+  quantity: number
+}
+
+// Sample products
+const products: Product[] = [
+  {
+    id: 1,
+    name: "Diamond Eternity Ring",
+    price: 2999.99,
+    image: "/ring.jpg",
+  },
+  {
+    id: 2,
+    name: "Pearl Necklace",
+    price: 1299.99,
+    image: "/necklace.jpg",
+  },
+  {
+    id: 3,
+    name: "Sapphire Earrings",
+    price: 899.99,
+    image: "/earrings.jpg",
+  },
+  {
+    id: 4,
+    name: "Gold Bracelet",
+    price: 1499.99,
+    image: "/bracelet.jpg",
+  },
+  {
+    id: 5,
+    name: "Emerald Pendant",
+    price: 1999.99,
+    image: "/pendant.jpg",
+  },
+  {
+    id: 6,
+    name: "Platinum Watch",
+    price: 3499.99,
+    image: "/watch.jpg",
+  },
+  {
+    id: 7,
+    name: "Ruby Brooch",
+    price: 999.99,
+    image: "/brooch.jpg",
+  },
+  {
+    id: 8,
+    name: "Silver Anklet",
+    price: 499.99,
+    image: "/anklet.jpg",
+  },
+]
+
+export default function ShopPage() {
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
+
+  // Function to add a product to the cart
+  const addToCart = (product: Product) => {
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((item) => item.id === product.id)
+      if (existingItem) {
+        return prevItems.map((item) =>
+          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        )
+      }
+      return [...prevItems, { ...product, quantity: 1 }]
+    })
+  }
+
   return (
     <div className="min-h-screen bg-[#4d0313]">
-
+      {/* Header */}
       <header className="fixed top-0 w-full z-50 bg-[#4d0313]/80 backdrop-blur-sm border-b border-gold/10">
-
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20">
             <Link href="/" className="text-2xl font-serif text-gold">
@@ -38,8 +117,10 @@ export default function Home() {
         </div>
       </header>
 
-      <main>
-        <section className="relative h-screen">
+      {/* Main Content */}
+      <main className="pt-24">
+        {/* Hero Section */}
+        <section className="relative h-[400px]">
           <Image
             src={`https://i.pinimg.com/736x/5d/22/6a/5d226ac0250e7026a8d866847e49aca0.jpg`}
             alt="Luxury jewelry piece"
@@ -56,7 +137,7 @@ export default function Home() {
                 transition={{ duration: 0.8 }}
                 className="text-4xl md:text-6xl lg:text-7xl font-serif text-gold"
               >
-                Timeless Elegance
+                Shop Our Collection
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -66,95 +147,49 @@ export default function Home() {
               >
                 Discover our curated collection of exquisite jewelry pieces
               </motion.p>
+            </div>
+          </div>
+        </section>
+
+        {/* Product Grid */}
+        <section className="container mx-auto px-4 py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {products.map((product) => (
               <motion.div
+                key={product.id}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="group relative overflow-hidden rounded-lg bg-[#4d0313]/50 border border-gold/10 hover:border-gold/20 transition-all"
               >
-                <Button className="bg-gold hover:bg-gold/90 text-[#4d0313] rounded-none px-8 py-6 text-lg">
-                  Explore Collection
-                  <ChevronRight className="ml-2 h-5 w-5" />
-                </Button>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-24 bg-[#4d0313]">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl md:text-4xl font-serif text-gold text-center mb-16">Featured Categories</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {categories.map((category, index) => (
-                <motion.div
-                  key={category.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group relative h-[400px] overflow-hidden"
-                >
+                <div className="aspect-square overflow-hidden">
                   <Image
-                    src={`https://i.pinimg.com/736x/02/2c/ce/022cce4455f29370704f56eaf8c798f3.jpg`}
-                    alt={category.name}
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    fill
+                    src={product.image}
+                    alt={product.name}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    width={300}
+                    height={300}
                   />
-                  <div className="absolute inset-0 bg-emerald-950/40 group-hover:bg-emerald-950/30 transition-colors duration-500" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Link
-                      href={category.href}
-                      className="text-2xl font-serif text-gold hover:text-gold/90 transition-colors"
-                    >
-                      {category.name}
-                    </Link>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-24 bg-emerald-900/20">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-                className="space-y-6"
-              >
-                <h2 className="text-3xl md:text-4xl font-serif text-gold">The Avantika Heritage</h2>
-                <p className="text-gold/90 leading-relaxed">
-                  For generations, Avantika has been crafting exquisite jewelry pieces that blend traditional artistry
-                  with contemporary design. Each piece tells a story of unparalleled craftsmanship and timeless
-                  elegance.
-                </p>
-                <Button
-  className="bg-[#4d0313] text-gold border-[#4d0313] hover:bg-[#65041a] hover:border-[#65041a] rounded-none px-8 py-6"
->
-  Discover Our Story
-</Button>
-
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-serif font-bold text-gold">{product.name}</h3>
+                  <p className="mt-2 text-gold/90">${product.price.toFixed(2)}</p>
+                  <Button
+                    onClick={() => addToCart(product)}
+                    className="mt-4 w-full bg-gold text-[#4d0313] hover:bg-gold/90 transition-all"
+                  >
+                    Add to Cart
+                  </Button>
+                </div>
               </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-                className="relative h-[600px]"
-              >
-                <Image
-                  src={`https://i.pinimg.com/736x/29/c6/4d/29c64d268611ae01ecc857f1120e7893.jpg`}
-                  alt="Jewelry craftsmanship"
-                  className="object-cover"
-                  fill
-                />
-              </motion.div>
-            </div>
+            ))}
           </div>
         </section>
       </main>
 
-      <footer className="bg-[#4d0313]/80 backdrop-blur-sm border-b border-gold/10">
-        <div className="container mx-auto px-4">
+      {/* Footer */}
+      <footer className="bg-[#4d0313]/80 backdrop-blur-sm border-t border-gold/10">
+        <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-gold font-serif text-lg mb-4">Contact</h3>
@@ -207,7 +242,7 @@ export default function Home() {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="w-full bg-emerald-900/20 border border-gold/20 text-gold placeholder:text-gold/50 px-4 py-2 focus:outline-none focus:border-gold"
+                className="w-full bg-[#4d0313]/20 border border-gold/20 text-gold placeholder:text-gold/50 px-4 py-2 focus:outline-none focus:border-gold"
               />
             </div>
           </div>
@@ -219,11 +254,4 @@ export default function Home() {
     </div>
   )
 }
-
-const categories = [
-  { name: "Necklaces", href: "/category/necklaces" },
-  { name: "Earrings", href: "/category/earrings" },
-  { name: "Rings", href: "/category/rings" },
-  { name: "Bracelets", href: "/category/bracelets" },
-]
 
